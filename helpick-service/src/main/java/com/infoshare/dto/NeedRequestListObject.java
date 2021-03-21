@@ -1,9 +1,11 @@
 package com.infoshare.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.infoshare.domain.HelpStatuses;
 import com.infoshare.domain.TypeOfHelp;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 public class NeedRequestListObject {
@@ -14,7 +16,20 @@ public class NeedRequestListObject {
     private TypeOfHelp typeOfHelp;
     private UUID uuid;
     private HelpStatuses helpStatus;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date statusChange;
+
+    @Override
+    public String toString() {
+        return "NeedRequestListObject{" +
+                "name='" + name + '\'' +
+                ", location='" + location + '\'' +
+                ", phone='" + phone + '\'' +
+                ", typeOfHelp=" + typeOfHelp +
+                ", helpStatus=" + helpStatus +
+                ", statusChange=" + statusChange +
+                '}';
+    }
 
     public HelpStatuses getHelpStatus() {
         return helpStatus;
@@ -72,6 +87,18 @@ public class NeedRequestListObject {
         this.typeOfHelp = typeOfHelp;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NeedRequestListObject that = (NeedRequestListObject) o;
+        return Objects.equals(name, that.name) && Objects.equals(location, that.location) && Objects.equals(phone, that.phone) && typeOfHelp == that.typeOfHelp && Objects.equals(uuid, that.uuid) && helpStatus == that.helpStatus && Objects.equals(statusChange, that.statusChange);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, location, phone, typeOfHelp, uuid, helpStatus, statusChange);
+    }
 
     public static final class NeedRequestListObjectBuilder {
         private String name;
