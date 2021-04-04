@@ -4,7 +4,7 @@
 name: Build, Test, Sonar Scan, Deply to GitHub packages
 
 on: 
-  workflow_dispatch
+  [workflow_dispatch, push, pull_request]
 
 jobs:
   build:
