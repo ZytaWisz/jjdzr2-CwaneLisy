@@ -1,6 +1,7 @@
 package com.infoshare.database;
 
 import com.infoshare.domain.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -14,6 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@Qualifier ("FileDb")
 public class FileDb implements DB {
 
     private static final String VOLUNTEER_DB_FILE_NAME = "Volunteer.csv";
@@ -39,40 +41,9 @@ public class FileDb implements DB {
 
     @Override
     public void saveVolunteer(Volunteer volunteer) {
-        try {
-            if (getVolunteer(volunteer.getEmail()) == null) {
-                try (FileWriter fileWriter = new FileWriter(VOLUNTEER_DB_FILE_NAME, true)) {
-                    fileWriter.write(
-                            volunteer.getName() + "," + volunteer.getLocation() + "," + volunteer.getEmail() + ","
-                                    + volunteer.getPhone() + "," + volunteer.getTypeOfHelp() + "," + volunteer.isAvailable()
-                                    + "," + volunteer.getUuid() + "\n");
-                }
-            } else {
-                List<Volunteer> allVolunteers = getVolunteers();
-                int index = -1;
-                for (int i = 0; i < allVolunteers.size(); i++) {
-                    Volunteer v = allVolunteers.get(i);
-                    if (v.getEmail().equals(volunteer.getEmail())) {
-                        index = i;
-                    }
-                }
-                allVolunteers.set(index, volunteer);  // gdy chce usunac .remove
-                try (FileWriter writer = new FileWriter(VOLUNTEER_DB_FILE_NAME, false)) {
-                    for (Volunteer v : allVolunteers) {
-                        writer.write(
-                                v.getName() + "," + v.getLocation() + "," + v.getEmail() + "," + v.getPhone() + "," + v
-                                        .getTypeOfHelp() + "," + v.isAvailable() + "," + v.getUuid() + "\n");
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(volunteer.getUuid() == null){
+            volunteer.setUuid(UUID.randomUUID());
         }
-
-    }
-
-    @Override
-    public void saveVolunteerWithUuid(Volunteer volunteer) {
         List<Volunteer> allVolunteers = getVolunteers();
         boolean isNewVolunteer = true;
         for (int i = 0; i < allVolunteers.size(); i++) {
@@ -91,6 +62,9 @@ public class FileDb implements DB {
 
     @Override
     public void saveNeedRequest(NeedRequest needRequest) {
+        if(needRequest.getUuid() == null){
+            needRequest.setUuid(UUID.randomUUID());
+        }
         List<NeedRequest> needRequests = getNeedRequests();
         Optional<Integer> optionalIndex = needRequests.stream()
                 .filter(needRequest1 -> needRequest1.getUuid().equals(needRequest.getUuid()))
@@ -102,27 +76,6 @@ public class FileDb implements DB {
             needRequests.add(needRequest);
         }
         saveNeedRequestList(needRequests);
-    }
-
-    private void saveNeedRequestList(List<NeedRequest> needRequests) {
-        try {
-            try (FileWriter fileWriter = new FileWriter(REQUEST_DB_FILE, false)) {
-                for (NeedRequest needRequest : needRequests) {
-                    PersonInNeed person = needRequest.getPersonInNeed();
-                    fileWriter.write(needRequest.getTypeOfHelp() + "," + needRequest.getHelpStatus() + "," + df
-                            .format(needRequest.getStatusChange()) + ",");
-                    fileWriter.write(person.getName() + "," + person.getLocation() + "," + person.getPhone() +
-                            "," + needRequest.getUuid() + "\n");
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void saveUpdatedNeedRequest(List<NeedRequest> needRequestList) {
-        saveNeedRequestList(needRequestList);
     }
 
     @Override
@@ -147,6 +100,11 @@ public class FileDb implements DB {
     }
 
     @Override
+    public void updateNeedRequest(NeedRequest needRequest){
+        saveNeedRequest(needRequest);
+    };
+
+    @Override
     public List<Volunteer> getVolunteers() {
         List<Volunteer> result = new ArrayList<>();
         try {
@@ -166,7 +124,7 @@ public class FileDb implements DB {
     }
 
     @Override
-    public Volunteer getVolunteer(String email) {
+    public Optional<Volunteer> getVolunteer(String email) {
 
         try {
             try (Scanner scanner = new Scanner(new File(VOLUNTEER_DB_FILE_NAME))) {
@@ -175,16 +133,16 @@ public class FileDb implements DB {
                     String line = scanner.nextLine();
                     String[] volunteerAtributes = line.split(",");
                     if (volunteerAtributes.length >= 6 && volunteerAtributes[2].equalsIgnoreCase(email)) {
-                        return new Volunteer(volunteerAtributes[0], volunteerAtributes[1], volunteerAtributes[2],
+                        return Optional.of(new Volunteer(volunteerAtributes[0], volunteerAtributes[1], volunteerAtributes[2],
                                 volunteerAtributes[3], TypeOfHelp.valueOf(volunteerAtributes[4]),
-                                Boolean.parseBoolean(volunteerAtributes[5]), UUID.fromString(volunteerAtributes[6]));
+                                Boolean.parseBoolean(volunteerAtributes[5]), UUID.fromString(volunteerAtributes[6]))) ;
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -192,6 +150,11 @@ public class FileDb implements DB {
         return getVolunteers().stream()
                 .filter(v -> v.getUuid().equals(uuid))
                 .findFirst();
+    }
+
+    @Override
+    public void updateVolunteer(Volunteer volunteer) {
+        saveVolunteer(volunteer);
     }
 
     private void saveVolunteers(List<Volunteer> volunteers)
@@ -206,6 +169,22 @@ public class FileDb implements DB {
                             v.getTypeOfHelp() + "," +
                             v.isAvailable() + "," +
                             v.getUuid() + "\n");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveNeedRequestList(List<NeedRequest> needRequests) {
+        try {
+            try (FileWriter fileWriter = new FileWriter(REQUEST_DB_FILE, false)) {
+                for (NeedRequest needRequest : needRequests) {
+                    PersonInNeed person = needRequest.getPersonInNeed();
+                    fileWriter.write(needRequest.getTypeOfHelp() + "," + needRequest.getHelpStatus() + "," + df
+                            .format(needRequest.getStatusChange()) + ",");
+                    fileWriter.write(person.getName() + "," + person.getLocation() + "," + person.getPhone() +
+                            "," + needRequest.getUuid() + "\n");
                 }
             }
         } catch (IOException e) {

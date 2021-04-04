@@ -5,6 +5,8 @@ import com.infoshare.service.VolunteerService;
 import com.infoshare.util.Util;
 import com.infoshare.util.ValidatorEnum;
 
+import java.util.Optional;
+
 
 public class VolunteerAvailabilityView {
 
@@ -35,10 +37,10 @@ public class VolunteerAvailabilityView {
   }
 
   public void handleVolunteerChangeAvailabilityProcess() {
-    Volunteer volunteer = volunteerService
+    Optional<Volunteer> volunteer = volunteerService
         .searchForVolunteer(Util.readDataFromConsole(GET_EMAIL, ValidatorEnum.EMAIL).toLowerCase());
-    if (volunteer != null) {
-      changeAvailability(volunteer);
+    if (volunteer.isPresent()) {
+      changeAvailability(volunteer.get());
     } else {
       System.out.println(EMAIL_UNKNOWN);
     }

@@ -1,6 +1,7 @@
 package com.infoshare.domain;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -14,24 +15,26 @@ public class NeedRequest {
     @Enumerated(EnumType.STRING)
     private HelpStatuses helpStatus;
     private Date statusChange;
-    @OneToOne
+    @OneToOne (cascade = {CascadeType.ALL})
     private PersonInNeed personInNeed;
+
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GeneratedValue(generator = "uuid4")
+    @GenericGenerator(name = "UUID", strategy = "uuid4")
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    @Column(columnDefinition = "CHAR(36)")
     private UUID uuid;
 
+    public NeedRequest(TypeOfHelp typeOfHelp, HelpStatuses helpStatus, Date statusChange, PersonInNeed personInNeed, UUID uuid){
+        this(typeOfHelp, helpStatus, statusChange,personInNeed);
+        this.uuid = uuid;
+    }
 
-    public NeedRequest(TypeOfHelp typeOfHelp, HelpStatuses helpStatus, Date statusChange, PersonInNeed personInNeed,
-                       UUID uuid) {
+    public NeedRequest(TypeOfHelp typeOfHelp, HelpStatuses helpStatus, Date statusChange, PersonInNeed personInNeed) {
         this.typeOfHelp = typeOfHelp;
         this.helpStatus = helpStatus;
         this.statusChange = statusChange;
         this.personInNeed = personInNeed;
-        this.uuid = uuid;
     }
 
     public NeedRequest() {
@@ -39,11 +42,15 @@ public class NeedRequest {
     }
 
     public static NeedRequest create(TypeOfHelp typeOfHelp, PersonInNeed personInNeed) {
-        return new NeedRequest(typeOfHelp, HelpStatuses.NEW, new Date(), personInNeed, UUID.randomUUID());
+        return new NeedRequest(typeOfHelp, HelpStatuses.NEW, new Date(), personInNeed);
     }
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public TypeOfHelp getTypeOfHelp() {
@@ -83,7 +90,6 @@ public class NeedRequest {
         return "NeedRequest{" + "typeOfHelp=" + typeOfHelp + ", helpStatus=" + helpStatus + ", statusChange="
                 + statusChange + ", personInNeed=" + personInNeed + '}';
     }
-
 
     @Override
     public boolean equals(Object o) {

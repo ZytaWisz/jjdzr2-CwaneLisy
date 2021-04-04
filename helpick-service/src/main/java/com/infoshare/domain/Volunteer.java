@@ -1,10 +1,11 @@
 package com.infoshare.domain;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
-
 
 @Entity
 public class Volunteer {
@@ -17,31 +18,31 @@ public class Volunteer {
     private TypeOfHelp typeOfHelp;
     private boolean isAvailable;
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GeneratedValue(generator = "uuid4")
+    @GenericGenerator(name = "UUID", strategy = "uuid4")
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    @Column(columnDefinition = "CHAR(36)")
     private UUID uuid;
 
     public Volunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
         boolean isAvailable, UUID uuid) {
+        this(name, location, email, phone, typeOfHelp, isAvailable);
+        this.uuid = uuid;
+    }
+
+    public Volunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
+                     boolean isAvailable) {
         this.name = name;
         this.location = location;
         this.email = email;
         this.phone = phone;
         this.typeOfHelp = typeOfHelp;
         this.isAvailable = isAvailable;
-        this.uuid = uuid;
     }
 
     public Volunteer() {
 
     }
-
-    public UUID getUuid() {
-    return uuid;
-  }
 
   @Override
     public String toString() {
@@ -119,5 +120,13 @@ public class Volunteer {
 
     public void setAvailable(boolean available) {
         isAvailable = available;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }

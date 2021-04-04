@@ -1,7 +1,6 @@
 package com.infoshare.service;
 
 import com.infoshare.database.DB;
-import com.infoshare.domain.NeedRequest;
 import com.infoshare.domain.TypeOfHelp;
 import com.infoshare.domain.Volunteer;
 
@@ -11,11 +10,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.infoshare.dto.NeedRequestFilterForm;
 import com.infoshare.dto.VolunteerFilterForm;
 import com.infoshare.dto.VolunteerListObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,7 +24,7 @@ public class VolunteerService {
     DB db;
 
     @Autowired
-    public VolunteerService(DB db) {
+    public VolunteerService(@Qualifier ("SpringDataDb") DB db) {
         this.db = db;
     }
 
@@ -82,7 +81,7 @@ public class VolunteerService {
                 .collect(Collectors.toList());
     }
 
-    public Volunteer searchForVolunteer(String email) {
+    public Optional<Volunteer> searchForVolunteer(String email) {
         return db.getVolunteer(email);
     }
 
@@ -98,8 +97,8 @@ public class VolunteerService {
 
     public boolean registerNewVolunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
                                         boolean availability) {
-        Volunteer newVolunteer = new Volunteer(name, location, email, phone, typeOfHelp, availability, UUID.randomUUID());
-        if (db.getVolunteer(newVolunteer.getEmail()) == null) {
+        Volunteer newVolunteer = new Volunteer(name, location, email, phone, typeOfHelp, availability);
+        if (db.getVolunteer(newVolunteer.getEmail()).isEmpty()){
             db.saveVolunteer(newVolunteer);
             return true;
         } else {
@@ -122,7 +121,7 @@ public class VolunteerService {
             volunteerToEdit.setTypeOfHelp(typeOfHelp);
             volunteerToEdit.setAvailable(availability);
             volunteerToEdit.setEmail(email);
-            db.saveVolunteerWithUuid(volunteerToEdit);
+            db.updateVolunteer(volunteerToEdit);
             return true;
         } else {
             return false;

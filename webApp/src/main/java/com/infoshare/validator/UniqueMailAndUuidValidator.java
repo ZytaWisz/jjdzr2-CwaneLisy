@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.Optional;
 
 public class UniqueMailAndUuidValidator implements ConstraintValidator<UniqueMailAndUuid, VolunteerForm> {
 
@@ -15,14 +16,14 @@ public class UniqueMailAndUuidValidator implements ConstraintValidator<UniqueMai
 
     @Override
     public boolean isValid(VolunteerForm volunteerForm, ConstraintValidatorContext context) {
-        Volunteer volunteer = volunteerService.searchForVolunteer(volunteerForm.getEmail());
-        if(volunteer == null){
+        Optional<Volunteer> volunteer = volunteerService.searchForVolunteer(volunteerForm.getEmail());
+        if(volunteer.isEmpty()){
             return true;
         } else {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate())
                     .addPropertyNode("email").addConstraintViolation();
-            return volunteer.getUuid().equals(volunteerForm.getUuid());
+            return volunteer.get().getUuid().equals(volunteerForm.getUuid());
         }
     }
 }
