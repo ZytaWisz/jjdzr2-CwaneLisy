@@ -1,5 +1,6 @@
 package com.infoshare.domain;
 
+import java.time.LocalDateTime;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
@@ -17,6 +18,7 @@ public class Volunteer {
     @Enumerated(EnumType.STRING)
     private TypeOfHelp typeOfHelp;
     private boolean isAvailable;
+    private LocalDateTime createDate;
     @Id
     @GeneratedValue(generator = "uuid4")
     @GenericGenerator(name = "UUID", strategy = "uuid4")
@@ -26,18 +28,19 @@ public class Volunteer {
 
     public Volunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
         boolean isAvailable, UUID uuid) {
-        this(name, location, email, phone, typeOfHelp, isAvailable);
+        this(name, location, email, phone, typeOfHelp, isAvailable, LocalDateTime.now());
         this.uuid = uuid;
     }
 
     public Volunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
-                     boolean isAvailable) {
+                     boolean isAvailable, LocalDateTime createDate) {
         this.name = name;
         this.location = location;
         this.email = email;
         this.phone = phone;
         this.typeOfHelp = typeOfHelp;
         this.isAvailable = isAvailable;
+        this.createDate=createDate;
     }
 
     public Volunteer() {
@@ -67,6 +70,14 @@ public class Volunteer {
         return isAvailable == volunteer.isAvailable && name.equals(volunteer.name) && location
             .equals(volunteer.location) && email.equals(volunteer.email) && phone
             .equals(volunteer.phone) && typeOfHelp.equals(volunteer.typeOfHelp);
+    }
+
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
     }
 
     @Override

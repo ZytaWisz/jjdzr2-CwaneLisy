@@ -8,19 +8,23 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/formStyle.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-social.css}">
     <script th:src="@{/webjars/jquery/3.5.1/jquery.js}"></script>
     <meta charset="UTF-8">
 
 </head>
 <body class="body-background">
 <header>
-    <div th:replace="/fragments/navbar.html ::navbar"></div>
+    <div th:replace="fragments/navbar.html ::navbar"></div>
 </header>
 
 <div layout:fragment="content">
 </div>
 
 <script th:src="@{/webjars/bootstrap/4.6.0/js/bootstrap.bundle.js}"></script>
+
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/pl_PL/sdk.js#xfbml=1&version=v10.0&appId=197282247010689&autoLogAppEvents=1" nonce="hnuqXkGn"></script>
 <script type="text/javascript">
     jQuery(function ($) {
         $(document).ready(function () {

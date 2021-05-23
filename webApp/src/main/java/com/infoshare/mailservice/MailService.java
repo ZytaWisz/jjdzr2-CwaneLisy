@@ -1,12 +1,16 @@
 package com.infoshare.mailservice;
 
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class MailService {
 
     private static final String EMAIL_SENDER = "Helpick! <helpick.application@gmail.com>";
@@ -23,7 +27,7 @@ public class MailService {
         simpleMailMessage.setFrom(EMAIL_SENDER);
         simpleMailMessage.setSubject(subject);
         simpleMailMessage.setText(content);
-
+        log.info("Sending message to "+ Arrays.stream(recipient).collect(Collectors.joining(",")));
         javaMailSender.send(simpleMailMessage);
     }
 }

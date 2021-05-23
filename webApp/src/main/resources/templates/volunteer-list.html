@@ -28,7 +28,7 @@
                         </a>
                     </div>
                     <div class="modal-body"
-                         th:insert="/fragments/volunteer-new-form.html :: edit-form(${newActionUrl})">
+                         th:insert="fragments/volunteer-new-form.html :: edit-form(${newActionUrl})">
                     </div>
                     <script th:inline="javascript"
                             th:if="${newHasErrors==true}">
@@ -49,7 +49,7 @@
         </div>
         <div class="row">
             <div class="col-sm-2 bg-white border-rounded shadow leftBorder filter-panel"
-                 th:insert="/fragments/volunteer-filter-panel.html :: filter-panel">
+                 th:insert="fragments/volunteer-filter-panel.html :: filter-panel">
             </div>
             <div class="col-sm-10 pr-0">
                 <div class="need-request" th:each="volunteer: ${volunteerList}">
@@ -57,7 +57,7 @@
                         <div class="left-col col-lg-6 d-flex align-items-center justify-content-between">
                             <div class="need-request-title d-flex align-items-center">
                                 <div class="text">
-                                    <a th:href="@{/volunteer/view/{id}(id=${volunteer.uuid})}" class="header-link">
+                                    <a class="header-link">
                                         <h3 class="h4" th:text="${volunteer.name}"></h3>
                                     </a>
                                     <small th:text="${volunteer.location}"></small>
@@ -125,7 +125,7 @@
                                                 </a>
                                             </div>
                                             <div class="modal-body"
-                                                 th:insert="/fragments/volunteer-edit-form :: volunteer-form">
+                                                 th:insert="fragments/volunteer-edit-form :: volunteer-form">
                                             </div>
                                             <script th:inline="javascript"
                                                     th:if="${hasErrors==true && volunteer.uuid==editVolunteer.uuid}">

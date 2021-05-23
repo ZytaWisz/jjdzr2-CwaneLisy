@@ -10,8 +10,8 @@ import com.infoshare.dto.NeedRequestListObject;
 import com.infoshare.event.NeedRequestEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -26,6 +26,10 @@ public class NeedRequestService {
 
     private final DB db;
 
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
+
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
@@ -39,6 +43,7 @@ public class NeedRequestService {
                 .filter(needRequest -> filterDates(needRequestFilterForm, needRequest))
                 .filter(needRequest -> filterLocation(needRequestFilterForm, needRequest))
                 .filter(needRequest -> filterFreeText(needRequestFilterForm, needRequest))
+                .sorted(Comparator.comparing(NeedRequest::getCreateDate).reversed())
                 .map(this::convertToNeedRequestForm)
                 .collect(Collectors.toList());
 

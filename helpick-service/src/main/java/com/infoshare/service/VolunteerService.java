@@ -3,15 +3,15 @@ package com.infoshare.service;
 import com.infoshare.database.DB;
 import com.infoshare.domain.TypeOfHelp;
 import com.infoshare.domain.Volunteer;
-
+import com.infoshare.dto.VolunteerFilterForm;
+import com.infoshare.dto.VolunteerListObject;
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import com.infoshare.dto.VolunteerFilterForm;
-import com.infoshare.dto.VolunteerListObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,6 +66,7 @@ public class VolunteerService {
                 .filter(volunteer -> filterLocation(volunteerFilterForm, volunteer))
                 .filter(volunteer -> filterFreeText(volunteerFilterForm, volunteer))
                 .filter(volunteer -> filterAvailability(volunteerFilterForm,volunteer))
+            .sorted(Comparator.comparing(Volunteer::getCreateDate).reversed())
                 .map(this::convertToVolunteerForm)
                 .collect(Collectors.toList());
 
@@ -97,7 +98,7 @@ public class VolunteerService {
 
     public boolean registerNewVolunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
                                         boolean availability) {
-        Volunteer newVolunteer = new Volunteer(name, location, email, phone, typeOfHelp, availability);
+        Volunteer newVolunteer = new Volunteer(name, location, email, phone, typeOfHelp, availability, LocalDateTime.now());
         if (db.getVolunteer(newVolunteer.getEmail()).isEmpty()){
             db.saveVolunteer(newVolunteer);
             return true;

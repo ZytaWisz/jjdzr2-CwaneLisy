@@ -1,9 +1,9 @@
 package com.infoshare.controller;
 
 import com.infoshare.dto.NeedRequestFilterForm;
+import com.infoshare.filteringservice.NeedRequestFilteringService;
 import com.infoshare.formobjects.NeedRequestForm;
 import com.infoshare.service.NeedRequestService;
-import com.infoshare.filteringservice.NeedRequestFilteringService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -107,7 +107,7 @@ public class NeedRequestController {
                                          Map<String, ?> errorRelatedEntries) {
 
         errorRelatedEntries.forEach(redirectAttributes::addFlashAttribute);
-               redirectAttributes.addAllAttributes(needRequestFilteringService.filterAttributes(requestValues));
+        redirectAttributes.addAllAttributes(needRequestFilteringService.filterAttributes(requestValues));
         return REDIRECT_NEED_REQUEST_ALL;
     }
 
@@ -139,22 +139,21 @@ public class NeedRequestController {
     }
 
     @GetMapping("/associate-to-volunteer")
-    public String associateNeedRequestToVolunteer(Model model) {
-        return getTestViewWithPageUnderConstructionMessage(model);
+    public String associateNeedRequestToVolunteer() {
+        return getTestViewWithPageUnderConstructionMessage();
     }
 
     @GetMapping("/add-comment")
-    public String addCommentToNeedRequest(Model model) {
-        return getTestViewWithPageUnderConstructionMessage(model);
+    public String addCommentToNeedRequest() {
+        return getTestViewWithPageUnderConstructionMessage();
     }
 
     @GetMapping("/browse-history")
-    public String browseHistoryOfNeedRequest(Model model) {
-        return getTestViewWithPageUnderConstructionMessage(model);
+    public String browseHistoryOfNeedRequest() {
+        return getTestViewWithPageUnderConstructionMessage();
     }
 
-    private String getTestViewWithPageUnderConstructionMessage(Model model) {
-        // redirectAttributes.addFlashAttribute("message", "This page is under construction...");
+    private String getTestViewWithPageUnderConstructionMessage() {
         return REDIRECT_NEED_REQUEST_ALL;
     }
 }

@@ -6,23 +6,35 @@ import com.infoshare.domain.NeedRequest;
 import com.infoshare.domain.TypeOfHelp;
 import com.infoshare.dto.NeedRequestFilterForm;
 import com.infoshare.dto.NeedRequestListObject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.util.List;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.context.ApplicationEventPublisher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class NeedRequestServiceTest {
-    private final DB db = mock(DB.class);
-    private final NeedRequestService needRequestService = new NeedRequestService(db);
+    private static final DB db = mock(DB.class);
+    private static final ApplicationEventPublisher applicationEventPublisher = mock(ApplicationEventPublisher.class);
+    private static final NeedRequestService needRequestService = new NeedRequestService(db);
+
     private final ArgumentCaptor<NeedRequest> needRequestArgumentCaptor = ArgumentCaptor.forClass(NeedRequest.class);
+
+    @BeforeAll
+    static void setUp(){
+        needRequestService.setApplicationEventPublisher(applicationEventPublisher);
+        doNothing().when(applicationEventPublisher).publishEvent(isA(Object.class));
+    }
 
     @Test
     void shouldCreateNeedRequest() {
-        // GIVEN
         doNothing().when(db).saveNeedRequest(needRequestArgumentCaptor.capture());
+        // GIVEN
         String name = "Ania";
         String location = "Gdansk";
         String phone = "122122122";

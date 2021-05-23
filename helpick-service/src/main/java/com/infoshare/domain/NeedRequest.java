@@ -1,5 +1,6 @@
 package com.infoshare.domain;
 
+import java.time.LocalDateTime;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
@@ -17,7 +18,7 @@ public class NeedRequest {
     private Date statusChange;
     @OneToOne (cascade = {CascadeType.ALL})
     private PersonInNeed personInNeed;
-
+    private LocalDateTime createDate;
     @Id
     @GeneratedValue(generator = "uuid4")
     @GenericGenerator(name = "UUID", strategy = "uuid4")
@@ -26,15 +27,17 @@ public class NeedRequest {
     private UUID uuid;
 
     public NeedRequest(TypeOfHelp typeOfHelp, HelpStatuses helpStatus, Date statusChange, PersonInNeed personInNeed, UUID uuid){
-        this(typeOfHelp, helpStatus, statusChange,personInNeed);
+        this(typeOfHelp, helpStatus, statusChange,personInNeed, LocalDateTime.now());
         this.uuid = uuid;
     }
 
-    public NeedRequest(TypeOfHelp typeOfHelp, HelpStatuses helpStatus, Date statusChange, PersonInNeed personInNeed) {
+    public NeedRequest(TypeOfHelp typeOfHelp, HelpStatuses helpStatus, Date statusChange, PersonInNeed personInNeed,
+                       LocalDateTime createDate) {
         this.typeOfHelp = typeOfHelp;
         this.helpStatus = helpStatus;
         this.statusChange = statusChange;
         this.personInNeed = personInNeed;
+        this.createDate=createDate;
     }
 
     public NeedRequest() {
@@ -42,7 +45,15 @@ public class NeedRequest {
     }
 
     public static NeedRequest create(TypeOfHelp typeOfHelp, PersonInNeed personInNeed) {
-        return new NeedRequest(typeOfHelp, HelpStatuses.NEW, new Date(), personInNeed);
+        return new NeedRequest(typeOfHelp, HelpStatuses.NEW, new Date(), personInNeed, LocalDateTime.now());
+    }
+
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
     }
 
     public UUID getUuid() {

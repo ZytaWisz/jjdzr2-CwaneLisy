@@ -5,8 +5,14 @@
     <title th:text="#{basicForm.appName}"></title>
 </head>
 <body>
-<section class="navbarSpacing" layout:fragment="content">
-    <h1 th:text="#{index.welcomeMessage}"></h1>
-</section>
+<div class="container-fluid navbarSpacing" layout:fragment="content">
+<div class="d-flex justify-content-center text-center">
+        <div class="mx-auto">
+            <div class="main-background">
+                <h1 th:text="#{index.welcomeMessage}"></h1>
+            </div>
+        </div>
+</div>
+</div>
 </body>
 </html>

@@ -13,6 +13,6 @@ public class UniqueMailValidator implements ConstraintValidator <IsMailRegistere
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-            return value != null && volunteerService.searchForVolunteer(value)!=null;
+            return value != null && volunteerService.searchForVolunteer(value).isPresent();
     }
 }
